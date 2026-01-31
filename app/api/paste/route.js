@@ -1,8 +1,14 @@
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function POST(req) {
-  const { content } = await req.json();
-  const paste = await prisma.paste.create({ data: { content }});
-  return NextResponse.json({ url: `/paste/${paste.id}` });
+export async function GET(req, { params }) {
+  const paste = await prisma.paste.findUnique({
+    where: { id: params.id },
+  });
+
+  if (!paste) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(paste);
 }
