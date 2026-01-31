@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
-  const paste = await prisma.paste.findUnique({
-    where: { id: params.id },
+export const dynamic = "force-dynamic"; // 🔥 REQUIRED
+
+export async function POST(req) {
+  const { content } = await req.json();
+
+  const paste = await prisma.paste.create({
+    data: { content },
   });
 
-  if (!paste) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  return NextResponse.json(paste);
+  return NextResponse.json({ id: paste.id });
 }
