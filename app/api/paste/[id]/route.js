@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic"; // 🔥 REQUIRED
+export const dynamic = "force-dynamic";
 
 export async function GET(req, { params }) {
   const paste = await prisma.paste.findUnique({
@@ -12,5 +12,7 @@ export async function GET(req, { params }) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(paste);
+  return NextResponse.json({
+    content: paste.content,
+  });
 }

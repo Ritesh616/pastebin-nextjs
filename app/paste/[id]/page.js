@@ -1,29 +1,48 @@
-import { prisma } from "../../../lib/prisma";
-import { notFound } from "next/navigation";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
 
-export default async function PastePage({ params }) {
-  const paste = await prisma.paste.findUnique({
-    where: { id: params.id },
-  });
+export default function PastePage({ params }) {
+  const { id } = params;
+  const [content, setContent] = useState("");
+  const [error, setError] = useState(null);
 
-  if (!paste) {
-    notFound();
+  useEffect(() => {
+    async function loadPaste() {
+      try {
+        const res = await fetch(`/api/paste/${id}`);
+        if (!res.ok) throw new Error("Not found");
+        const data = await res.json();
+        setContent(data.content);
+      } catch {
+        setError("Paste not found or expired");
+      }
+    }
+
+    loadPaste();
+  }, [id]);
+
+  if (error) {
+    return <p style={{ padding: 20, textAlign: "center" }}>{error}</p>;
   }
 
   return (
-    <div style={{ padding: 40, maxWidth: 800, margin: "auto" }}>
+    <div
+      style={{
+        maxWidth: 800,
+        margin: "20px auto",
+        padding: 20,
+        boxSizing: "border-box",
+      }}
+    >
       <pre
         style={{
           whiteSpace: "pre-wrap",
-          wordBreak: "break-word",
-          background: "#f5f5f5",
-          padding: 20,
-          borderRadius: 6,
+          wordWrap: "break-word",
+          fontSize: 16,
         }}
       >
-        {paste.content}
+        {content}
       </pre>
     </div>
   );
