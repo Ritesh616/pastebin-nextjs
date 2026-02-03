@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = "postgresql://neondb_owner:npg_WldMwZe2P7Ua@ep-long-paper-ah4704dp-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 }
 
 model Paste {
@@ -13,3 +13,8 @@ model Paste {
   content String
   createdAt DateTime @default(now())
 }
+
+
+
+
+
