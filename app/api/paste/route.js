@@ -5,11 +5,12 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req) {
   try {
-    const { content } = await req.json();
+    const body = await req.json();
+    const { content } = body;
 
-    if (!content || !content.trim()) {
+    if (!content || typeof content !== "string" || !content.trim()) {
       return NextResponse.json(
-        { error: "Content required" },
+        { error: "Content is required" },
         { status: 400 }
       );
     }
