@@ -1,18 +1,39 @@
-import { prisma } from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // ✅ CRITICAL
 
-export async function GET(req, { params }) {
-  const paste = await prisma.paste.findUnique({
-    where: { id: params.id },
-  });
+export async function GET(request, { params }) {
+  try {
+    const { id } = params;
 
-  if (!paste) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!id) {
+      return NextResponse.json(
+        { error: "ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const paste = await prisma.paste.findUnique({
+      where: { id },
+    });
+
+    if (!paste) {
+      return NextResponse.json(
+        { error: "Paste not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { content: paste.content },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("GET /api/paste/[id] error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({
-    content: paste.content,
-  });
 }
